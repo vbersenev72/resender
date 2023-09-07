@@ -10,23 +10,22 @@ const token = process.env.TOKEN
 const bot = new Telegraf(token)
 let users = {}
 
-bot.use((ctx, next) => {
+bot.use( async (ctx, next) => {
+  if (RegExp(/^\/get==/).test(ctx.message.text)) {
+    const user = ctx.message.text.split('==')[1]
+    const res = await pool.query('INSERT INTO access(telegram_nickname) values($1) RETURNING *', [user])
+    console.log(res.rows);
+    return ctx.reply(`Пользователю @${user} разрешен доступ`)
+  }
+  if (RegExp(/^\/delete==/).test(ctx.message.text)) {
+    const user = ctx.message.text.split('==')[1]
+    const res = await pool.query('DELETE FROM access WHERE telegram_nickname = $1 RETURNING *', [user])
+    console.log(res.rows);
+    return ctx.reply(`Пользователь @${user} удален из доступа`)
+  }
     next()
 })
 
-bot.command(/^\/get==/, async (ctx) => {
-  const user = ctx.message.text.split('==')[1]
-  const res = await pool.query('INSERT INTO access(telegram_nickname) values($1) RETURNING *', [user])
-  console.log(res.rows);
-  ctx.reply(`Пользователю @${user} разрешен доступ`)
-})
-
-bot.command(/^\/delete==/, async (ctx) => {
-  const user = ctx.message.text.split('==')[1]
-  const res = await pool.query('DELETE FROM access WHERE telegram_nickname = $1 RETURNING *', [user])
-  console.log(res.rows);
-  ctx.reply(`Пользователь @${user} удален из доступа`)
-})
 
 bot.command('start', async (ctx) => {
   const userId = ctx.from.id;
