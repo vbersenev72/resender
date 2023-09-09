@@ -30,6 +30,7 @@ bot.use( async (ctx, next) => {
 bot.command('start', async (ctx) => {
   const userId = ctx.from.id;
   users[userId] = {};
+  const user = await pool.query('DELETE FROM users WHERE telegram_id = $1', [userId])
   ctx.reply('Добро пожаловать! Введите API-токен сообщества ВК')
 
   bot.on('message', async (ctx) => {
