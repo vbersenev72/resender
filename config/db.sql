@@ -4,7 +4,7 @@ CREATE TABLE users(
     group_id_vk TEXT,
     telegram_id TEXT,
     telegram_chat TEXT,
-    last_post_id TEXT
+    last_post_date TEXT
 );
 
 CREATE TABLE access(
